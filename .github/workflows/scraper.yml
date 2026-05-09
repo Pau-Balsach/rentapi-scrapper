@@ -17,15 +17,15 @@ jobs:
         shell: powershell
         run: |
           if (-Not (Test-Path "C:\tools\rentapi\cookies.json")) {
-            Write-Error "❌ cookies.json no encontrado en C:\tools\rentapi\. Ejecuta refresh-cookies.js manualmente."
+            Write-Error "cookies.json no encontrado en C:\tools\rentapi. Ejecuta refresh-cookies.js manualmente."
             exit 1
           }
           $cookies = Get-Content "C:\tools\rentapi\cookies.json" | ConvertFrom-Json
           $generadas = [datetime]$cookies.generatedAt
           $diasDesde = ((Get-Date) - $generadas).Days
-          Write-Host "✅ cookies.json encontrado — generadas hace $diasDesde días"
+          Write-Host "cookies.json encontrado - generadas hace $diasDesde dias"
           if ($diasDesde -gt 7) {
-            Write-Warning "⚠️ Las cookies tienen más de 7 días, pueden estar caducadas"
+            Write-Warning "Las cookies tienen mas de 7 dias, pueden estar caducadas"
           }
 
       - name: Scraping Habitaclia
@@ -50,4 +50,4 @@ jobs:
         shell: powershell
         run: |
           $archivos = (Get-ChildItem "C:\tools\rentapi" -Filter "*.html").Count
-          Write-Host "✅ Scraping completado — $archivos HTMLs procesados"
+          Write-Host "Scraping completado - $archivos HTMLs procesados"
