@@ -40,6 +40,14 @@ jobs:
           cd C:\Users\pbalsach\Desktop\Projectes\scrapers-js
           node idealista-scraper-auto.js C:\tools\rentapi
 
+      - name: Compilar Java
+        shell: powershell
+        run: |
+          cd ${{ github.workspace }}
+          $env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"
+          $mvn = "C:\Users\pbalsach\Desktop\Projectes\Maven\apache-maven-3.9.14\bin\mvn.cmd"
+          & $mvn compile
+
       - name: Procesar HTMLs con Java
         shell: powershell
         run: |
