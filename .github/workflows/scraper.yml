@@ -2,8 +2,8 @@ name: RentAPI Scraper
 
 on:
   schedule:
-    - cron: '0 5 * * 0'  # Cada domingo a las 5:00am (hora UTC)
-  workflow_dispatch:      # También se puede lanzar manualmente desde GitHub
+    - cron: '0 5 * * 0'  # Cada domingo a las 5:00am UTC
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -44,7 +44,8 @@ jobs:
         shell: powershell
         run: |
           cd ${{ github.workspace }}
-          mvn exec:java -Dexec.mainClass="com.rentapi.rentapiscraper.Main" -Dexec.args="C:\tools\rentapi"
+          $env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"
+          C:\Users\pbalsach\Desktop\Projectes\Maven\apache-maven-3.9.14\bin\mvn.cmd exec:java -Dexec.mainClass="com.rentapi.rentapiscraper.Main" -Dexec.args="C:\tools\rentapi"
 
       - name: Resumen
         shell: powershell
