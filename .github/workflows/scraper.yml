@@ -28,6 +28,15 @@ jobs:
             Write-Warning "Las cookies tienen mas de 7 dias, pueden estar caducadas"
           }
 
+      - name: Escribir config.properties
+        shell: powershell
+        run: |
+          $content = "${{ secrets.CONFIG_PROPERTIES }}"
+          $dest = "${{ github.workspace }}\src\main\resources\config.properties"
+          New-Item -ItemType Directory -Force -Path (Split-Path $dest)
+          Set-Content -Path $dest -Value $content -Encoding UTF8
+          Write-Host "config.properties escrito correctamente"
+
       - name: Scraping Habitaclia
         shell: powershell
         run: |
