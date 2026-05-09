@@ -1,0 +1,53 @@
+name: RentAPI Scraper
+
+on:
+  schedule:
+    - cron: '0 5 * * 0'  # Cada domingo a las 5:00am (hora UTC)
+  workflow_dispatch:      # También se puede lanzar manualmente desde GitHub
+
+jobs:
+  scrape:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Verificar cookies
+        shell: powershell
+        run: |
+          if (-Not (Test-Path "C:\tools\rentapi\cookies.json")) {
+            Write-Error "❌ cookies.json no encontrado en C:\tools\rentapi\. Ejecuta refresh-cookies.js manualmente."
+            exit 1
+          }
+          $cookies = Get-Content "C:\tools\rentapi\cookies.json" | ConvertFrom-Json
+          $generadas = [datetime]$cookies.generatedAt
+          $diasDesde = ((Get-Date) - $generadas).Days
+          Write-Host "✅ cookies.json encontrado — generadas hace $diasDesde días"
+          if ($diasDesde -gt 7) {
+            Write-Warning "⚠️ Las cookies tienen más de 7 días, pueden estar caducadas"
+          }
+
+      - name: Scraping Habitaclia
+        shell: powershell
+        run: |
+          cd C:\Users\pbalsach\Desktop\Projectes\scrapers-js
+          node habitaclia-scraper-auto.js C:\tools\rentapi
+
+      - name: Scraping Idealista
+        shell: powershell
+        run: |
+          cd C:\Users\pbalsach\Desktop\Projectes\scrapers-js
+          node idealista-scraper-auto.js C:\tools\rentapi
+
+      - name: Procesar HTMLs con Java
+        shell: powershell
+        run: |
+          cd ${{ github.workspace }}
+          mvn exec:java -Dexec.mainClass="com.rentapi.rentapiscraper.Main" -Dexec.args="C:\tools\rentapi"
+
+      - name: Resumen
+        shell: powershell
+        run: |
+          $archivos = (Get-ChildItem "C:\tools\rentapi" -Filter "*.html").Count
+          Write-Host "✅ Scraping completado — $archivos HTMLs procesados"
