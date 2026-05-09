@@ -45,7 +45,9 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           $env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"
-          C:\Users\pbalsach\Desktop\Projectes\Maven\apache-maven-3.9.14\bin\mvn.cmd exec:java -Dexec.mainClass="com.rentapi.rentapiscraper.Main" -Dexec.args="C:\tools\rentapi"
+          $mvn = "C:\Users\pbalsach\Desktop\Projectes\Maven\apache-maven-3.9.14\bin\mvn.cmd"
+          $outputPath = "C:/tools/rentapi"
+          & $mvn exec:java "-Dexec.mainClass=com.rentapi.rentapiscraper.Main" "-Dexec.args=$outputPath"
 
       - name: Resumen
         shell: powershell
