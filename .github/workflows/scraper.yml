@@ -2,7 +2,7 @@ name: RentAPI Scraper
 
 on:
   schedule:
-    - cron: '0 5 * * 0'  # Cada domingo a las 5:00am UTC
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
