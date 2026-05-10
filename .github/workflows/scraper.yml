@@ -30,12 +30,12 @@ jobs:
 
       - name: Escribir config.properties
         shell: powershell
+        env:
+          CONFIG_PROPS: ${{ secrets.CONFIG_PROPERTIES }}
         run: |
           $dest = "${{ github.workspace }}\src\main\resources\config.properties"
           New-Item -ItemType Directory -Force -Path (Split-Path $dest) | Out-Null
-          @"
-          ${{ secrets.CONFIG_PROPERTIES }}
-          "@ | Set-Content -Path $dest -Encoding UTF8
+          [System.IO.File]::WriteAllText($dest, $env:CONFIG_PROPS)
           Write-Host "config.properties escrito en: $dest"
           Get-Content $dest
 
