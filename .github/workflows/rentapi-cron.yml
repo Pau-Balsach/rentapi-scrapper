@@ -1,0 +1,92 @@
+name: RentAPI Scraper
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  scrape:
+    runs-on: self-hosted
+
+    steps:
+      - name: Debug trigger
+        shell: powershell
+        run: |
+          Write-Host "==============================="
+          Write-Host "Evento: ${{ github.event_name }}"
+          Write-Host "Workflow: ${{ github.workflow }}"
+          Write-Host "Branch: ${{ github.ref }}"
+          Write-Host "Fecha UTC: $(Get-Date -Format u)"
+          Write-Host "==============================="
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Verificar cookies
+        shell: powershell
+        run: |
+          if (-Not (Test-Path "C:\tools\rentapi\cookies.json")) {
+            Write-Error "cookies.json no encontrado en C:\tools\rentapi. Ejecuta refresh-cookies.js manualmente."
+            exit 1
+          }
+
+          $cookies = Get-Content "C:\tools\rentapi\cookies.json" | ConvertFrom-Json
+          $generadas = [datetime]$cookies.generatedAt
+          $diasDesde = ((Get-Date) - $generadas).Days
+
+          Write-Host "cookies.json encontrado - generadas hace $diasDesde dias"
+
+          if ($diasDesde -gt 7) {
+            Write-Warning "Las cookies tienen mas de 7 dias, pueden estar caducadas"
+          }
+
+      - name: Escribir config.properties
+        shell: powershell
+        env:
+          CONFIG_PROPS: ${{ secrets.CONFIG_PROPERTIES }}
+        run: |
+          $dest = "${{ github.workspace }}\src\main\resources\config.properties"
+
+          New-Item -ItemType Directory -Force -Path (Split-Path $dest) | Out-Null
+
+          [System.IO.File]::WriteAllText($dest, $env:CONFIG_PROPS)
+
+          Write-Host "config.properties escrito en: $dest"
+
+          Get-Content $dest
+
+      - name: Scraping Habitaclia
+        shell: powershell
+        run: |
+          cd C:\Users\pbalsach\Desktop\Projectes\scrapers-js
+          node habitaclia-scraper-auto.js C:\tools\rentapi
+
+      - name: Scraping Idealista
+        shell: powershell
+        run: |
+          cd C:\Users\pbalsach\Desktop\Projectes\scrapers-js
+          node idealista-scraper-auto.js C:\tools\rentapi
+
+      - name: Compilar y ejecutar Java
+        shell: powershell
+        run: |
+          cd ${{ github.workspace }}
+
+          $env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"
+
+          $mvn = "C:\Users\pbalsach\Desktop\Projectes\Maven\apache-maven-3.9.14\bin\mvn.cmd"
+
+          $outputPath = "C:/tools/rentapi"
+
+          & $mvn compile exec:java `
+            "-Dexec.mainClass=com.rentapi.rentapiscraper.Main" `
+            "-Dexec.args=$outputPath"
+
+      - name: Resumen
+        shell: powershell
+        run: |
+          $archivos = (Get-ChildItem "C:\tools\rentapi" -Filter "*.html").Count
+
+          Write-Host "Scraping completado - $archivos HTMLs procesados"
