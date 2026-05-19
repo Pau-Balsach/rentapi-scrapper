@@ -1,6 +1,6 @@
 # RentAPI Scraper 🕷️
 
-Scraper en Java que extrae anuncios de alquiler de **Habitaclia**, **Idealista** y **Fotocasa**, los normaliza y los almacena en una base de datos PostgreSQL (Supabase). Forma parte del ecosistema [RentAPI Web](https://rentapi-web.vercel.app/).
+Scraper en Java que extrae anuncios de alquiler de **Habitaclia** y **Idealista**, los normaliza y los almacena en una base de datos PostgreSQL (Supabase). Forma parte del ecosistema [RentAPI Web](https://rentapi-web.vercel.app/).
 
 ---
 
@@ -20,8 +20,7 @@ Guardar página como .html  ──►  C:\tools\rentapi\
 Main.java detecta los ficheros por prefijo
         │
         ├── habitaclia-{ciudad}.html  →  HabitacliaScraper
-        ├── idealista-{provincia}.html →  IdealistaScraper
-        └── fotocasa-{ciudad}.html    →  FotocasaScraper
+        └── idealista-{provincia}.html →  IdealistaScraper
                     │
                     ▼
             Jsoup parsea los artículos
@@ -55,7 +54,6 @@ Main.java detecta los ficheros por prefijo
 rentapi-scraper/
 ├── src/main/java/com/rentapi/rentapiscraper/
 │   ├── Main.java               # Punto de entrada, orquesta todos los scrapers
-│   ├── FotocasaScraper.java    # Parser de Fotocasa
 │   ├── HabitacliaScraper.java  # Parser de Habitaclia
 │   ├── IdealistaScraper.java   # Parser de Idealista
 │   ├── StatsCalculator.java    # Calcula estadísticas mensuales por ciudad y barrio
@@ -99,7 +97,6 @@ Nombra los ficheros siguiendo este patrón y colócalos en `C:\tools\rentapi\`:
 habitaclia-barcelona.html
 habitaclia-girona.html
 idealista-barcelona.html
-fotocasa-barcelona-capital.html
 ```
 
 ### 2. Compilar y ejecutar
@@ -139,7 +136,6 @@ env:
 |---|---|---|
 | Habitaclia | `data-element-id` en `article` | `.list-item-location` |
 | Idealista | `data-element-id` en `article.item` | Desde el título del anuncio |
-| Fotocasa | ID extraído del `href` del enlace | Texto con formato "Barrio, Ciudad" |
 
 ---
 
