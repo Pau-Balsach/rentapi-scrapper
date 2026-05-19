@@ -33,20 +33,17 @@ public class StatsCalculator {
         calcularStatsBarrios(mes, hasta);
     }
 
-    // ─── Stats ciudades — 1 sola query ───────────────────────────────────────
+    // ─── Stats ciudades ───────────────────────────────────────
 
     private void calcularStatsCiudades(LocalDate mes, LocalDate hasta) throws SQLException {
         log.info("[Stats] Calculando stats de ciudades...");
-
-        // Una query que agrupa por ciudad_id × tipología (null=todas, 0-4=hab)
-        // Usamos UNNEST para generar las filas de tipología null + 0..4 en una sola pasada
         String sql = """
             WITH base AS (
                 SELECT
                     ciudad_id,
                     habitaciones,
                     precio_mes,
-                    CASE WHEN metros_cuadrados > 0 THEN precio_mes / metros_cuadrados END AS precio_m2
+                    CASE WHEN metros_cuadrados > 5 THEN precio_mes / metros_cuadrados END AS precio_m2
                 FROM pisos
                 WHERE activo = true
                   AND fecha_scraping >= ?
@@ -110,7 +107,7 @@ public class StatsCalculator {
         log.info("[Stats] Ciudades → {} insertados, {} actualizados", insertados, actualizados);
     }
 
-    // ─── Stats barrios — 1 sola query ────────────────────────────────────────
+    // ─── Stats barrios ────────────────────────────────────────
 
     private void calcularStatsBarrios(LocalDate mes, LocalDate hasta) throws SQLException {
         log.info("[Stats] Calculando stats de barrios...");
