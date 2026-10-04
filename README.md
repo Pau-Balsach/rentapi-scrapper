@@ -1,6 +1,17 @@
 # RentAPI Scraper 🕷️
 
-Scraper en Java que extrae anuncios de alquiler de **Habitaclia**, **Idealista** y **Fotocasa**, los normaliza y los almacena en una base de datos PostgreSQL (Supabase). Forma parte del ecosistema [RentAPI Web](https://rentapi-web.vercel.app/).
+Scraper en Java que extrae anuncios de alquiler de **Habitaclia** y **Idealista**, los normaliza y los almacena en una base de datos PostgreSQL (Supabase). Forma parte del ecosistema [RentAPI Web](https://rentapi-web.vercel.app/).
+
+---
+
+## Ecosistema RentAPI
+
+Este repositorio es el **scraper** del ecosistema. Los otros dos componentes son:
+
+| Repositorio | Descripción |
+|---|---|
+| ⚙️ [rentapi](https://github.com/Pau-Balsach/rentapi) | API REST en Spring Boot que expone los datos al frontend |
+| 🌐 [rentapi-web](https://github.com/Pau-Balsach/rentapi-web) | Frontend en React/Vite que visualiza los datos en un mapa interactivo — [ver web](https://rentapi-web.vercel.app/) |
 
 ---
 
@@ -20,8 +31,7 @@ Guardar página como .html  ──►  C:\tools\rentapi\
 Main.java detecta los ficheros por prefijo
         │
         ├── habitaclia-{ciudad}.html  →  HabitacliaScraper
-        ├── idealista-{provincia}.html →  IdealistaScraper
-        └── fotocasa-{ciudad}.html    →  FotocasaScraper
+        └── idealista-{provincia}.html →  IdealistaScraper
                     │
                     ▼
             Jsoup parsea los artículos
@@ -152,12 +162,6 @@ El scraper escribe en las siguientes tablas de Supabase:
 - `barrios` — se crean automáticamente si no existen
 - `stats_ciudad_mensual` — estadísticas agregadas por ciudad y mes
 - `stats_barrio_mensual` — estadísticas agregadas por barrio y mes
-
----
-
-## Relacionado
-
-- 🌐 **RentAPI Web** — [rentapi-web.vercel.app](https://rentapi-web.vercel.app/) — Frontend que consume estos datos
 
 ---
 
